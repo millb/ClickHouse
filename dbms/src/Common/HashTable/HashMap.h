@@ -49,7 +49,6 @@ struct HashMapCell
     HashMapCell(const Key & key_, const State &) : value(key_, NoInitTag()) {}
     HashMapCell(const value_type & value_, const State &) : value(value_) {}
 
-    Key & getFirstMutable() { return value.first; }
     const Key & getFirst() const { return value.first; }
     Mapped & getSecond() { return value.second; }
     const Mapped & getSecond() const { return value.second; }
