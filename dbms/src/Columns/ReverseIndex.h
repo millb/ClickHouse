@@ -151,6 +151,7 @@ namespace
     public:
         using Base::Base;
         using iterator = typename Base::iterator;
+        using MappedPtr = typename Base::MappedPtr;
         State & getState() { return *this; }
 
 
@@ -168,7 +169,7 @@ namespace
         }
 
         template <typename ObjectToCompareWith>
-        void ALWAYS_INLINE reverseIndexEmplaceNonZero(const Key & key, iterator & it,
+        void ALWAYS_INLINE reverseIndexEmplaceNonZero(const Key & key, MappedPtr & it,
             bool & inserted, size_t hash_value, const ObjectToCompareWith & object)
         {
             size_t place_value = reverseIndexFindCell(object, hash_value,
@@ -184,10 +185,16 @@ namespace
         void ALWAYS_INLINE reverseIndexEmplace(Key key, iterator & it, bool & inserted,
             size_t hash_value, const ObjectToCompareWith& object)
         {
-            if (!this->emplaceIfZero(key, it, inserted, hash_value))
+            MappedPtr mapped = nullptr;
+            static_assert(std::is_same<MappedPtr, void *>::value,
+                          "Wrong cell type for ReverseIndex");
+
+            if (!this->emplaceIfZero(key, mapped, inserted, hash_value))
             {
-                reverseIndexEmplaceNonZero(key, it, inserted, hash_value, object);
+                reverseIndexEmplaceNonZero(key, mapped, inserted, hash_value, object);
             }
+            assert(mapped != nullptr);
+            it = iterator(this, reinterpret_cast<Cell *>(mapped));
         }
 
         template <typename ObjectToCompareWith>
