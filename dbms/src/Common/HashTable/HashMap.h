@@ -53,7 +53,6 @@ struct HashMapCell
     Mapped & getSecond() { return value.second; }
     const Mapped & getSecond() const { return value.second; }
 
-    value_type & getValueMutable() { return value; }
     const value_type & getValue() const { return value; }
 
     static const Key & getKey(const value_type & value) { return value.first; }
