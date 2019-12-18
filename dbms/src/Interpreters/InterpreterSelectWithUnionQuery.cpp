@@ -36,6 +36,7 @@ InterpreterSelectWithUnionQuery::InterpreterSelectWithUnionQuery(
     query_ptr(query_ptr_),
     context(std::make_shared<Context>(context_))
 {
+    std::cerr << "\n1\n";
     const auto & ast = query_ptr->as<ASTSelectWithUnionQuery &>();
 
     size_t num_selects = ast.list_of_selects->children.size();
@@ -49,10 +50,11 @@ InterpreterSelectWithUnionQuery::InterpreterSelectWithUnionQuery(
     ///  because names could be different.
 
     nested_interpreters.reserve(num_selects);
-
     std::vector<Names> required_result_column_names_for_other_selects(num_selects);
+    std::cerr << "2\n";
     if (!required_result_column_names.empty() && num_selects > 1)
     {
+        std::cerr << "3\n";
         /// Result header if there are no filtering by 'required_result_column_names'.
         /// We use it to determine positions of 'required_result_column_names' in SELECT clause.
 
@@ -79,8 +81,9 @@ InterpreterSelectWithUnionQuery::InterpreterSelectWithUnionQuery(
             for (const auto & pos : positions_of_required_result_columns)
                 required_result_column_names_for_other_selects[query_num].push_back(full_result_header_for_current_select.getByPosition(pos).name);
         }
+        std::cerr << "->3\n";
     }
-
+    std::cerr << "4\n";
     for (size_t query_num = 0; query_num < num_selects; ++query_num)
     {
         const Names & current_required_result_column_names
@@ -92,6 +95,7 @@ InterpreterSelectWithUnionQuery::InterpreterSelectWithUnionQuery(
             options,
             current_required_result_column_names));
     }
+    std::cerr << "5\n";
 
     /// Determine structure of the result.
 
@@ -107,6 +111,7 @@ InterpreterSelectWithUnionQuery::InterpreterSelectWithUnionQuery(
 
         result_header = getCommonHeaderForUnion(headers);
     }
+    std::cerr << "6\n";
 
     /// InterpreterSelectWithUnionQuery ignores limits if all nested interpreters ignore limits.
     bool all_nested_ignore_limits = true;
@@ -118,6 +123,7 @@ InterpreterSelectWithUnionQuery::InterpreterSelectWithUnionQuery(
         if (!interpreter->ignoreQuota())
             all_nested_ignore_quota = false;
     }
+    std::cerr << "7\n";
     options.ignore_limits |= all_nested_ignore_limits;
     options.ignore_quota |= all_nested_ignore_quota;
 }
