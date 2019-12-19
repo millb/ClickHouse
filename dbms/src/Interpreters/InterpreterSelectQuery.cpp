@@ -235,6 +235,7 @@ InterpreterSelectQuery::InterpreterSelectQuery(
     , input(input_)
     , log(&Logger::get("InterpreterSelectQuery"))
 {
+    std::cerr << "ENTER IN InterpreterSelectQuery\n" << std::endl;
     checkStackSize();
 
     initSettings();
@@ -243,7 +244,7 @@ InterpreterSelectQuery::InterpreterSelectQuery(
     if (settings.max_subquery_depth && options.subquery_depth > settings.max_subquery_depth)
         throw Exception("Too deep subqueries. Maximum: " + settings.max_subquery_depth.toString(),
             ErrorCodes::TOO_DEEP_SUBQUERIES);
-
+    std::cerr << "1\n";
     if (settings.allow_experimental_cross_to_join_conversion)
     {
         CrossToInnerJoinVisitor::Data cross_to_inner;
@@ -258,7 +259,7 @@ InterpreterSelectQuery::InterpreterSelectQuery(
 
     max_streams = settings.max_threads;
     auto & query = getSelectQuery();
-
+    std::cerr << "2\n";
     ASTPtr table_expression = extractTableExpression(query, 0);
 
     bool is_table_func = false;
@@ -274,6 +275,7 @@ InterpreterSelectQuery::InterpreterSelectQuery(
         /// Read from prepared input.
         source_header = input->getHeader();
     }
+    std::cerr << "3\n";
     else if (is_subquery)
     {
         /// Read from subquery.
@@ -314,7 +316,7 @@ InterpreterSelectQuery::InterpreterSelectQuery(
             }
         }
     }
-
+    std::cerr << "4\n";
     if (storage)
         table_lock = storage->lockStructureForShare(false, context->getInitialQueryId());
 
@@ -349,7 +351,7 @@ InterpreterSelectQuery::InterpreterSelectQuery(
                 if (!context->tryGetExternalTable(it.first))
                     context->addExternalTable(it.first, it.second);
         }
-
+        std::cerr << "5\n";
         if (!options.only_analyze || options.modify_inplace)
         {
             if (syntax_analyzer_result->rewrite_subqueries)
@@ -392,6 +394,7 @@ InterpreterSelectQuery::InterpreterSelectQuery(
         /// Calculate structure of the result.
         result_header = getSampleBlockImpl();
     };
+    std::cerr << "6\n";
 
     analyze();
 
@@ -419,7 +422,7 @@ InterpreterSelectQuery::InterpreterSelectQuery(
     ///  null non-const columns to avoid useless memory allocations. However, a valid block sample
     ///  requires all columns to be of size 0, thus we need to sanitize the block here.
     sanitizeBlock(result_header);
-
+    std::cerr << "7\n";
     /// Remove limits for some tables in the `system` database.
     if (storage && (storage->getDatabaseName() == "system"))
     {
