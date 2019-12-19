@@ -232,6 +232,7 @@ void ExpressionAnalyzer::initGlobalSubqueriesAndExternalTables(bool do_global)
 
 void SelectQueryExpressionAnalyzer::tryMakeSetForIndexFromSubquery(const ASTPtr & subquery_or_table_name)
 {
+    std::cerr << " enter in tryMakeSetForIndexFromSubquery" << std::endl;
     auto set_key = PreparedSetKey::forSubquery(*subquery_or_table_name);
 
     if (prepared_sets.count(set_key))
