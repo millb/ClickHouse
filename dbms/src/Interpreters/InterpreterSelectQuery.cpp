@@ -270,12 +270,13 @@ InterpreterSelectQuery::InterpreterSelectQuery(
         is_subquery = table_expression->as<ASTSelectWithUnionQuery>();
     }
 
+    std::cerr << "3\n";
+
     if (input)
     {
         /// Read from prepared input.
         source_header = input->getHeader();
     }
-    std::cerr << "3\n";
     else if (is_subquery)
     {
         /// Read from subquery.
