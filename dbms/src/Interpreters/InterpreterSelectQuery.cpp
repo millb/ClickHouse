@@ -275,10 +275,12 @@ InterpreterSelectQuery::InterpreterSelectQuery(
     if (input)
     {
         /// Read from prepared input.
+        std::cerr << "ReadFromPreparedInput\n";
         source_header = input->getHeader();
     }
     else if (is_subquery)
     {
+        std::cerr << "ReadFromSubquery\n";
         /// Read from subquery.
         interpreter_subquery = std::make_unique<InterpreterSelectWithUnionQuery>(
             table_expression, getSubqueryContext(*context), options.subquery(), required_columns);
@@ -287,6 +289,7 @@ InterpreterSelectQuery::InterpreterSelectQuery(
     }
     else if (!storage)
     {
+        std::cerr << "ReadFromTableFunction\n";
         if (is_table_func)
         {
             /// Read from table function. propagate all settings from initSettings(),
