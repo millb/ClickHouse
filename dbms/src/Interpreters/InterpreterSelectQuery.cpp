@@ -292,6 +292,7 @@ InterpreterSelectQuery::InterpreterSelectQuery(
         std::cerr << "ReadFromTableFunction\n";
         if (is_table_func)
         {
+            std::cerr << " is_table_function\n";
             /// Read from table function. propagate all settings from initSettings(),
             /// alternative is to call on current `context`, but that can potentially pollute it.
             storage = getSubqueryContext(*context).executeTableFunction(table_expression);
@@ -302,6 +303,8 @@ InterpreterSelectQuery::InterpreterSelectQuery(
             String table_name;
 
             getDatabaseAndTableNames(query, database_name, table_name, *context);
+
+            std::cerr << "is_not_table_function\n";
 
             if (auto view_source = context->getViewSource())
             {
