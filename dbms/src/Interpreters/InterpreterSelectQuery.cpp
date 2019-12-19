@@ -305,10 +305,13 @@ InterpreterSelectQuery::InterpreterSelectQuery(
             getDatabaseAndTableNames(query, database_name, table_name, *context);
 
             std::cerr << "is_not_table_function\n";
-            std::cerr <<  database_name << " " << table_name << "\n";
+            std::cerr << "!!! " << database_name << " " << table_name << "\n";
             if (auto view_source = context->getViewSource())
             {
                 auto & storage_values = static_cast<const StorageValues &>(*view_source);
+
+                std::cerr << "??? " << storage_values.getDatabaseName() << " " << table_name << "\n";
+
                 if (storage_values.getDatabaseName() == database_name && storage_values.getTableName() == table_name)
                 {
                     /// Read from view source.
