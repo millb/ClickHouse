@@ -21,7 +21,7 @@ class DiskLocal : public IDisk
 public:
     friend class DiskLocalReservation;
 
-    DiskLocal(const String & name_, const String & path_, UInt64 keep_free_space_bytes_, const String & mount_point_ = "")
+    DiskLocal(const String & name_, const String & path_, UInt64 keep_free_space_bytes_, const String & mount_point_="")
         : name(name_), disk_path(path_), keep_free_space_bytes(keep_free_space_bytes_), mount_point(mount_point_)
     {
         if (disk_path.back() != '/')
@@ -82,8 +82,8 @@ private:
 private:
     const String name;
     const String disk_path;
-    const String mount_point; /// used to check the available size
     const UInt64 keep_free_space_bytes;
+    const String mount_point; /// used to check the available size
 
     UInt64 reserved_bytes = 0;
     UInt64 reservation_count = 0;

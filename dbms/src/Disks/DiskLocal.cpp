@@ -276,7 +276,8 @@ void registerDiskLocal(DiskFactory & factory)
         String mount_point = config.getString(config_prefix + ".mount_point", "");
         if (name == "default")
         {
-            mount_point = path + "data/";
+            if (mount_point == "")
+                mount_point = path + "data/";
             if (!path.empty())
                 throw Exception(
                     "\"default\" disk path should be provided in <path> not it <storage_configuration>",
@@ -289,6 +290,8 @@ void registerDiskLocal(DiskFactory & factory)
                 throw Exception("Disk path can not be empty. Disk " + name, ErrorCodes::UNKNOWN_ELEMENT_IN_CONFIG);
             if (path.back() != '/')
                 throw Exception("Disk path must end with /. Disk " + name, ErrorCodes::UNKNOWN_ELEMENT_IN_CONFIG);
+            if (mount_point.back() != '/')
+                throw Exception("Mount point must end with /. Disk " + name, ErrorCodes::UNKNOWN_ELEMENT_IN_CONFIG);
         }
 
         if (Poco::File disk{path}; !disk.canRead() || !disk.canWrite())
