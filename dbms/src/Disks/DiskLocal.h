@@ -26,7 +26,7 @@ public:
     {
         if (disk_path.back() != '/')
             throw Exception("Disk path must ends with '/', but '" + disk_path + "' doesn't.", ErrorCodes::LOGICAL_ERROR);
-        if (mount_point != "" && mount_point.back() != '/')
+        if (!mount_point.empty() && mount_point.back() != '/')
             throw Exception("Mount point must ends with '/', but '" + mount_point + "' doesn't.", ErrorCodes::LOGICAL_ERROR);
     }
 

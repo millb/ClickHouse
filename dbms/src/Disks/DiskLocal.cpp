@@ -290,7 +290,7 @@ void registerDiskLocal(DiskFactory & factory)
                 throw Exception("Disk path can not be empty. Disk " + name, ErrorCodes::UNKNOWN_ELEMENT_IN_CONFIG);
             if (path.back() != '/')
                 throw Exception("Disk path must end with /. Disk " + name, ErrorCodes::UNKNOWN_ELEMENT_IN_CONFIG);
-            if (mount_point.back() != '/')
+            if (!mount_point.empty() && mount_point.back() != '/')
                 throw Exception("Mount point must end with /. Disk " + name, ErrorCodes::UNKNOWN_ELEMENT_IN_CONFIG);
         }
 
