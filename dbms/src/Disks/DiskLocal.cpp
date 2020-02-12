@@ -123,7 +123,7 @@ UInt64 DiskLocal::getAvailableSpace() const
         fs = getStatVFS(disk_path);
     UInt64 total_size = fs.f_bavail * fs.f_bsize;
     if (total_size < keep_free_space_bytes)
-        return 0;auto fs = getStatVFS(disk_path);
+        return 0;
     return total_size - keep_free_space_bytes;
 }
 
