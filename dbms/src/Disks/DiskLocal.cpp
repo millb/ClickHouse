@@ -101,7 +101,11 @@ bool DiskLocal::tryReserve(UInt64 bytes)
 
 UInt64 DiskLocal::getTotalSpace() const
 {
-    auto fs = getStatVFS(disk_path);
+    struct statvfs fs;
+    if (mount_point != "")
+        fs = getStatVFS(mount_point);
+    else
+        fs = getStatVFS(disk_path);
     UInt64 total_size = fs.f_blocks * fs.f_bsize;
     if (total_size < keep_free_space_bytes)
         return 0;
@@ -112,10 +116,14 @@ UInt64 DiskLocal::getAvailableSpace() const
 {
     /// we use f_bavail, because part of b_free space is
     /// available for superuser only and for system purposes
-    auto fs = getStatVFS(disk_path);
+    struct statvfs fs;
+    if (mount_point != "")
+        fs = getStatVFS(mount_point);
+    else
+        fs = getStatVFS(disk_path);
     UInt64 total_size = fs.f_bavail * fs.f_bsize;
     if (total_size < keep_free_space_bytes)
-        return 0;
+        return 0;auto fs = getStatVFS(disk_path);
     return total_size - keep_free_space_bytes;
 }
 
@@ -265,8 +273,10 @@ void registerDiskLocal(DiskFactory & factory)
                       const String & config_prefix,
                       const Context & context) -> DiskPtr {
         String path = config.getString(config_prefix + ".path", "");
+        String mount_point = config.getString(config_prefix + ".mount_point", "");
         if (name == "default")
         {
+            mount_point = path + "data/";
             if (!path.empty())
                 throw Exception(
                     "\"default\" disk path should be provided in <path> not it <storage_configuration>",
@@ -305,10 +315,10 @@ void registerDiskLocal(DiskFactory & factory)
                 tmp_path = context.getPath();
 
             // Create tmp disk for getting total disk space.
-            keep_free_space_bytes = static_cast<UInt64>(DiskLocal("tmp", tmp_path, 0).getTotalSpace() * ratio);
+            keep_free_space_bytes = static_cast<UInt64>(DiskLocal("tmp", tmp_path, 0, mount_point).getTotalSpace() * ratio);
         }
 
-        return std::make_shared<DiskLocal>(name, path, keep_free_space_bytes);
+        return std::make_shared<DiskLocal>(name, path, keep_free_space_bytes, mount_point);
     };
     factory.registerDiskType("local", creator);
 }

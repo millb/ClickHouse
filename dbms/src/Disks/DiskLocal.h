@@ -21,11 +21,13 @@ class DiskLocal : public IDisk
 public:
     friend class DiskLocalReservation;
 
-    DiskLocal(const String & name_, const String & path_, UInt64 keep_free_space_bytes_)
-        : name(name_), disk_path(path_), keep_free_space_bytes(keep_free_space_bytes_)
+    DiskLocal(const String & name_, const String & path_, UInt64 keep_free_space_bytes_, const String & mount_point_ = "")
+        : name(name_), disk_path(path_), keep_free_space_bytes(keep_free_space_bytes_), mount_point(mount_point_)
     {
         if (disk_path.back() != '/')
             throw Exception("Disk path must ends with '/', but '" + disk_path + "' doesn't.", ErrorCodes::LOGICAL_ERROR);
+        if (mount_point != "" && mount_point.back() != '/')
+            throw Exception("Mount point must ends with '/', but '" + mount_point + "' doesn't.", ErrorCodes::LOGICAL_ERROR);
     }
 
     const String & getName() const override { return name; }
@@ -80,6 +82,7 @@ private:
 private:
     const String name;
     const String disk_path;
+    const String mount_point; /// used to check the available size
     const UInt64 keep_free_space_bytes;
 
     UInt64 reserved_bytes = 0;
