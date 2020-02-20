@@ -811,6 +811,7 @@ SyntaxAnalyzerResultPtr SyntaxAnalyzer::analyze(
     auto * select_query = query->as<ASTSelectQuery>();
     if (!storage && select_query)
     {
+        std::cerr << "\n\nENTER IN IF without storage\n\n" << std::endl;
         if (auto db_and_table = getDatabaseAndTable(*select_query, 0))
             storage = context.tryGetTable(db_and_table->database, db_and_table->table);
     }
