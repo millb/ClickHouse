@@ -36,6 +36,7 @@ InterpreterSelectWithUnionQuery::InterpreterSelectWithUnionQuery(
     query_ptr(query_ptr_),
     context(std::make_shared<Context>(context_))
 {
+    std::cerr << "\n\n3\n\n";
     const auto & ast = query_ptr->as<ASTSelectWithUnionQuery &>();
 
     size_t num_selects = ast.list_of_selects->children.size();

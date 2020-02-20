@@ -808,6 +808,7 @@ SyntaxAnalyzerResultPtr SyntaxAnalyzer::analyze(
     StoragePtr storage,
     const NamesAndTypesList & additional_source_columns) const
 {
+    std::cerr << "\n\n2\n\n";
     auto * select_query = query->as<ASTSelectQuery>();
     if (!storage && select_query)
     {
