@@ -277,7 +277,7 @@ void registerDiskLocal(DiskFactory & factory)
         if (name == "default")
         {
             if (mount_point == "")
-                mount_point = path + "data/";
+                mount_point = context.getPath() + "data/";
             if (!path.empty())
                 throw Exception(
                     "\"default\" disk path should be provided in <path> not it <storage_configuration>",
