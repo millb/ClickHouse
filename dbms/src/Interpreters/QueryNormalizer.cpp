@@ -116,11 +116,7 @@ void QueryNormalizer::visit(ASTIdentifier & node, ASTPtr & ast, Data & data)
         /// Let's replace it with the corresponding tree node.
         if (current_asts.count(alias_node.get()))
             throw Exception("Cyclic aliases", ErrorCodes::CYCLIC_ALIASES);
-
-    {
-        if (!IdentifierSemantic::canBeAlias(node))
-        {
-            /// This means that column had qualified name, which was translated
+        
         String my_alias = ast->tryGetAlias();
         if (!my_alias.empty() && my_alias != alias_node->getAliasOrColumnName())
         {
