@@ -8,6 +8,7 @@
 #include <Parsers/ASTSelectQuery.h>
 #include <Parsers/ASTQueryParameter.h>
 #include <Parsers/ASTTablesInSelectQuery.h>
+#include <Parsers/ASTSubquery.h>
 #include <Common/StringUtils/StringUtils.h>
 #include <Common/quoteString.h>
 #include <IO/WriteHelpers.h>
@@ -62,6 +63,25 @@ private:
     const String copy;
 };
 
+void QueryNormalizer::visit(ASTTableExpression & node, ASTPtr & ast, Data & data)
+{
+    if (node.database_and_table_name)
+    {
+        auto * database_and_table_name = node.database_and_table_name->as<ASTIdentifier>();
+
+        auto it_alias = data.aliases.find(database_and_table_name->name);
+
+        if (it_alias != data.aliases.end())
+        {
+            if (auto * alias_node = it_alias->second->as<ASTSubquery>())
+            {
+                node.database_and_table_name = nullptr;
+                node.subquery = alias_node->clone();
+            }
+
+        }
+    }
+}
 
 void QueryNormalizer::visit(ASTIdentifier & node, ASTPtr & ast, Data & data)
 {
@@ -97,6 +117,10 @@ void QueryNormalizer::visit(ASTIdentifier & node, ASTPtr & ast, Data & data)
         if (current_asts.count(alias_node.get()))
             throw Exception("Cyclic aliases", ErrorCodes::CYCLIC_ALIASES);
 
+    {
+        if (!IdentifierSemantic::canBeAlias(node))
+        {
+            /// This means that column had qualified name, which was translated
         String my_alias = ast->tryGetAlias();
         if (!my_alias.empty() && my_alias != alias_node->getAliasOrColumnName())
         {
@@ -211,6 +235,8 @@ void QueryNormalizer::visit(ASTPtr & ast, Data & data)
         visit(*node_tables, ast, data);
     else if (auto * node_select = ast->as<ASTSelectQuery>())
         visit(*node_select, ast, data);
+    else if (auto * node_table_expression = ast->as<ASTTableExpression>())
+        visit(*node_table_expression, ast, data);
     else if (auto * node_param = ast->as<ASTQueryParameter>())
         throw Exception("Query parameter " + backQuote(node_param->name) + " was not set", ErrorCodes::UNKNOWN_QUERY_PARAMETER);
 

@@ -10,6 +10,7 @@ namespace DB
 
 class ASTSelectQuery;
 class ASTIdentifier;
+class ASTTableExpression;
 struct ASTTablesInSelectQueryElement;
 class Context;
 
@@ -65,6 +66,7 @@ private:
 
     static void visit(ASTPtr & query, Data & data);
 
+    static void visit(ASTTableExpression & node, ASTPtr & ast, Data & data);
     static void visit(ASTIdentifier &, ASTPtr &, Data &);
     static void visit(ASTTablesInSelectQueryElement &, const ASTPtr &, Data &);
     static void visit(ASTSelectQuery &, const ASTPtr &, Data &);
