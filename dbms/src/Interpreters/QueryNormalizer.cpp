@@ -77,6 +77,8 @@ void QueryNormalizer::visit(ASTTableExpression & node, ASTPtr & ast, Data & data
             {
                 node.database_and_table_name = nullptr;
                 node.subquery = alias_node->clone();
+
+                ast = node.clone();
             }
 
         }
@@ -116,7 +118,7 @@ void QueryNormalizer::visit(ASTIdentifier & node, ASTPtr & ast, Data & data)
         /// Let's replace it with the corresponding tree node.
         if (current_asts.count(alias_node.get()))
             throw Exception("Cyclic aliases", ErrorCodes::CYCLIC_ALIASES);
-        
+
         String my_alias = ast->tryGetAlias();
         if (!my_alias.empty() && my_alias != alias_node->getAliasOrColumnName())
         {
